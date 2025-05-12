@@ -22,8 +22,12 @@ def index():
     teams=df['球隊'].values.tolist()[:-1]
 
 
+    x_data=df['球隊'].values.tolist()[:-1]
+    y_data=df['投籃'].astype(float).values.tolist()
+    #y2_data=df['命中率'].str.replace('%', '').astype(float).value.tolist()
 
-    return render_template("index.html",datas=datas ,columns=columns,teams=teams)
+
+    return render_template("index.html",datas=datas ,columns=columns,teams=teams,x_data=x_data,y_data=y_data)
 
 
 @app.route("/get_team_data_table")
@@ -41,6 +45,9 @@ def get_team_data_table():
 
     if team != "all":
         df = df[df["球隊"] == team]
+
+
+    
 
     return json.dumps({"datas": df.values.tolist()})
 

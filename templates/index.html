@@ -5,12 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NBA_PROJ</title>
     <link rel="stylesheet" href="{{ url_for('static',filename='style.css')}}">
-    
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+
 </head>
 
 
 <body>
     <h1 style="text-align: center;">NBA 數據</h1>
+
+
+    <div id="main" style="width: 1000px;height:400px; margin: 0 auto;"></div>
+
+
     <form action="">
 
         <label for="team">球隊</label>
@@ -32,7 +38,10 @@
 
         
     </form>
-    
+
+    <div id="chart_data" data-labels='{{x_data | tojson | safe}}' data-values='{{y_data | tojson | safe}}'></div>
+
+
 
     <table border="1">
         <thead>
@@ -62,6 +71,54 @@
     const teamsEl = document.querySelector("#team");
     const tableBody = document.querySelector("tbody");
 
+    const chardata= document.querySelector("#chart_data");
+    const labels=JSON.parse(chardata.dataset.labels);
+    const values=JSON.parse(chardata.dataset.values);
+    var myChart = echarts.init(document.getElementById('main'));
+
+      // 指定图表的配置项和数据
+      var option = {
+        title: {
+          text: 'NBA 球隊數據'
+        },
+        tooltip: {},
+        legend: {
+          data: ['數值']
+        },
+        color: ['#ff7f0e'],
+        xAxis: {
+          data: labels
+        },
+        
+        dataZoom:[{
+            type:'slider',
+            start:0,
+            end:100
+        }],
+        yAxis: {},
+        series: [
+          {
+            name: '數值',
+            type: 'bar',
+            data: values,
+            itemStyle: {
+                    color: '#1f77b4'  // 單獨指定 bar 顏色
+                }
+          }
+        ]
+      };
+
+      // 使用刚指定的配置项和数据显示图表。
+      myChart.setOption(option);
+
+
+
+
+
+
+
+
+
     teamsEl.addEventListener("change", () => {
         const selectedTeam = teamsEl.value;
         
@@ -86,6 +143,8 @@
                 
                 
             });
+
+
     });
 
 
