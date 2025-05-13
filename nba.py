@@ -25,5 +25,22 @@ def get_nba():
 
     return datas,columns, teams, x_data,y_data , y2_data, y3_data
 
+
+def get_player(team):
+    url="https://tw-nba.udn.com/nba/stats/teams"
+    resp=requests.get(url)
+    soup=BeautifulSoup(resp.text,'lxml')
+    player_url={i.find('a').text:"https://tw-nba.udn.com"+i.find('a').get('href') for i in soup.find("table",class_="stable matchup standings sortable").find_all('tr')[1:-1]}
+
+    if team in player_url:
+        url_w=player_url[team]
+        resp_w=requests.get(url_w)
+        soup_w=BeautifulSoup(resp_w.text,'lxml')
+        player_columns=[i.text for i in soup_w.find('table',class_="stable matchup sortable").find_all('th')]
+        player_value=[i.text.strip().split('\n') for i in soup_w.find('table',class_="stable matchup sortable").find_all('tr')[1:]]
+    
+    return player_columns,player_value
+
+
 if __name__ == "__main__" :
-    print(get_nba())
+    print(get_player('雷霆'))

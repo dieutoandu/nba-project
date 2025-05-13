@@ -72,134 +72,148 @@
     const tableBody = document.querySelector("tbody");
 
     const chardata= document.querySelector("#chart_data");
+    
     const labels=JSON.parse(chardata.dataset.labels);
     const values=JSON.parse(chardata.dataset.values);
     const values2=JSON.parse(chardata.dataset.values2);
     const values3=JSON.parse(chardata.dataset.values3);
 
 
+    
     var chartDom = document.getElementById('main');
     var myChart = echarts.init(chartDom);
-    var option;
 
-    const colors = ['#5470C6', '#91CC75', '#EE6666'];
-    option = {
-    color: colors,
-    backgroundColor: '#121212',
-    tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-        type: 'cross'
-        }
-    },
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    textStyle: {
-            color: '#fff'
+    get_echart()
+
+    function get_echart(){
+        
+        var option;
+
+        const colors = ['#5470C6', '#91CC75', '#EE6666'];
+        option = {
+        color: colors,
+        backgroundColor: '#121212',
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+            type: 'cross'
+            }
         },
-    grid: {
-        right: '20%',
-        left: '8%',
-        bottom: '10%'
-    },
-    toolbox: {
-        feature: {
-        dataView: { show: true, readOnly: false },
-        restore: { show: true },
-        saveAsImage: { show: true }
-        }
-    },
-    legend: {
-        data: ['投籃次數', '得分', '命中率'],
+        backgroundColor: 'rgba(0,0,0,0.7)',
         textStyle: {
-            color: '#ffffff'
-        }
-    },
-    xAxis: {
-        type: 'category',
-        data: labels,
-        axisLabel: {
-            color: '#ffffff'
-        },
-        axisLine: {
-            lineStyle: {
-                color: '#888'
-            }
-        }
-    },
-    yAxis: [
-        {
-            type: 'value',
-            name: '次數',
-            position: 'left',
-            axisLine: {
-                lineStyle: {
-                    color: colors[0]
-                }
+                color: '#fff'
             },
-            axisLabel: {
-                formatter: '{value}',
+        grid: {
+            right: '20%',
+            left: '8%',
+            bottom: '10%'
+        },
+        toolbox: {
+            feature: {
+            dataView: { show: true, readOnly: false },
+            restore: { show: true },
+            saveAsImage: { show: true }
+            }
+        },
+        legend: {
+            data: ['投籃次數', '得分', '命中率'],
+            textStyle: {
                 color: '#ffffff'
             }
         },
-        {
-            type: 'value',
-            name: '得分',
-            position: 'right',
-            offset: 60,
+        xAxis: {
+            type: 'category',
+            data: labels,
+            axisLabel: {
+                color: '#ffffff'
+            },
             axisLine: {
                 lineStyle: {
-                    color: colors[1]
+                    color: '#888'
                 }
-            },
-            axisLabel: {
-                formatter: '{value} 分',
-                color: '#ffffff'
             }
         },
-        {
-            type: 'value',
-            name: '命中率',
-            position: 'right',
-            axisLine: {
+        dataZoom:[{
+            type:'slider',
+            start: 0,
+            end:100
+        }],
+        yAxis: [
+            {
+                type: 'value',
+                name: '次數',
+                position: 'left',
+                axisLine: {
+                    lineStyle: {
+                        color: colors[0]
+                    }
+                },
+                axisLabel: {
+                    formatter: '{value}',
+                    color: '#ffffff'
+                }
+            },
+            {
+                type: 'value',
+                name: '得分',
+                position: 'right',
+                offset: 60,
+                axisLine: {
+                    lineStyle: {
+                        color: colors[1]
+                    }
+                },
+                axisLabel: {
+                    formatter: '{value} 分',
+                    color: '#ffffff'
+                }
+            },
+            {
+                type: 'value',
+                name: '命中率',
+                position: 'right',
+                axisLine: {
+                    lineStyle: {
+                        color: colors[2]
+                    }
+                },
+                axisLabel: {
+                    formatter: '{value} %',
+                    color: '#ffffff'
+                }
+            }
+        ],
+        series: [
+            {
+                name: '投籃次數',
+                type: 'bar',
+                data: values,
+                yAxisIndex: 0
+            },
+            {
+                name: '得分',
+                type: 'bar',
+                data: values2,
+                yAxisIndex: 1
+            },
+            {
+                name: '命中率',
+                type: 'line',
+                data: values3,
+                yAxisIndex: 2,
+                smooth: true,
                 lineStyle: {
-                    color: colors[2]
-                }
-            },
-            axisLabel: {
-                formatter: '{value} %',
-                color: '#ffffff'
+                    width: 2
+                },
+                symbol: 'circle',
+                symbolSize: 6
             }
-        }
-    ],
-    series: [
-        {
-            name: '投籃次數',
-            type: 'bar',
-            data: values,
-            yAxisIndex: 0
-        },
-        {
-            name: '得分',
-            type: 'bar',
-            data: values2,
-            yAxisIndex: 1
-        },
-        {
-            name: '命中率',
-            type: 'line',
-            data: values3,
-            yAxisIndex: 2,
-            smooth: true,
-            lineStyle: {
-                width: 2
-            },
-            symbol: 'circle',
-            symbolSize: 6
-        }
-    ]
-};
+        ]
+    };
 
-myChart.setOption(option);
+    myChart.setOption(option);
+    }
+    
 
 
     teamsEl.addEventListener("change", () => {
@@ -213,6 +227,8 @@ myChart.setOption(option);
                 console.log(data);
                 
                 tableBody.innerHTML = ""; // 清空原本的表格內容
+
+
 
                 data.datas.forEach(row => {
                     const tr = document.createElement("tr");
