@@ -37,9 +37,9 @@ def get_player(team):
         resp_w=requests.get(url_w)
         soup_w=BeautifulSoup(resp_w.text,'lxml')
         player_columns=[i.text for i in soup_w.find('table',class_="stable matchup sortable").find_all('th')]
-        player_value=[i.text.strip().split('\n') for i in soup_w.find('table',class_="stable matchup sortable").find_all('tr')[1:]]
-    
-    return player_columns,player_value
+        player_values=[i.text.strip().split('\n') for i in soup_w.find('table',class_="stable matchup sortable").find_all('tr')[1:]]
+        
+    return player_columns,player_values
 
 
 if __name__ == "__main__" :

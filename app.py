@@ -1,7 +1,7 @@
 from flask import Flask ,render_template,request
 import pandas as pd
 import json
-from nba import get_nba
+from nba import get_nba,get_player
 from bs4 import BeautifulSoup
 import requests
 
@@ -31,12 +31,16 @@ def get_team_data_table():
     df = df.dropna()
 
     if team != "all":
-        df = df[df["球隊"] == team]
+        #df = df[df["球隊"] == team]
+        player_columns,player_values=get_player(team)
+        df=pd.DataFrame(player_values,columns=player_columns)
+
+
 
 
     
 
-    return json.dumps({"datas": df.values.tolist()})
+    return json.dumps({"datas": df.values.tolist(),"columns": df.columns.tolist()})
 
 
 
