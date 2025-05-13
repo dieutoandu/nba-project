@@ -1,33 +1,20 @@
 from flask import Flask ,render_template,request
-import requests
-from bs4 import BeautifulSoup
 import pandas as pd
 import json
+from nba import get_nba
+from bs4 import BeautifulSoup
+import requests
 
 
 app= Flask(__name__)
 
 @app.route("/")
 def index():
-    url="https://tw-nba.udn.com/nba/stats/teams"
-    resp=requests.get(url)
-    soup=BeautifulSoup(resp.text,'lxml')
-    columns=[i.text for i in soup.find("table",class_="stable matchup standings sortable").find_all('tr')[0].find_all("th")]
-    datas=[i.text.split() for i in soup.find("table",class_="stable matchup standings sortable").find_all('tr')[1:]]
+    datas,columns,teams,x_data,y_data, y2_data,y3_data=get_nba()
     
-    df=pd.DataFrame(datas,columns=columns)
-    df=df.dropna()
-    
-    datas=df.values.tolist()
-    teams=df['球隊'].values.tolist()[:-1]
 
 
-    x_data=df['球隊'].values.tolist()[:-1]
-    y_data=df['投籃'].astype(float).values.tolist()
-    #y2_data=df['命中率'].str.replace('%', '').astype(float).value.tolist()
-
-
-    return render_template("index.html",datas=datas ,columns=columns,teams=teams,x_data=x_data,y_data=y_data)
+    return render_template("index.html",datas=datas ,columns=columns,teams=teams,x_data=x_data,y_data=y_data ,y2_data=y2_data ,y3_data=y3_data)
 
 
 @app.route("/get_team_data_table")
