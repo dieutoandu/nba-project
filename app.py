@@ -29,22 +29,9 @@ def index():
 def get_team_data_table():
     team = request.args.get("team", "all")
 
-    url = "https://tw-nba.udn.com/nba/stats/teams"
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, "lxml")
-    columns = [
-        i.text
-        for i in soup.find("table", class_="stable matchup standings sortable")
-        .find_all("tr")[0]
-        .find_all("th")
-    ]
-    datas = [
-        i.text.split()
-        for i in soup.find(
-            "table", class_="stable matchup standings sortable"
-        ).find_all("tr")[1:]
-    ]
+    
     datas, columns, teams, x_data, y_data, y2_data, y3_data = get_nba()
+    
     df = pd.DataFrame(datas, columns=columns)
     df = df.dropna()
 

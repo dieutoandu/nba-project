@@ -84,9 +84,10 @@
     var chartDom = document.getElementById('main');
     var myChart = echarts.init(chartDom);
 
-    get_echart(myChart,labels,values,values2,values3)
+    const title=['投籃次數', '得分', '命中率']
+    get_echart(myChart,labels,values,values2,values3 ,title)
 
-    function get_echart(myChart,labels,values,values2,values3){
+    function get_echart(myChart,labels,values,values2,values3,title){
         
         var option;
 
@@ -117,7 +118,7 @@
             }
         },
         legend: {
-            data: ['投籃次數', '得分', '命中率'],
+            data: title,
             textStyle: {
                 color: '#ffffff'
             }
@@ -142,7 +143,7 @@
         yAxis: [
             {
                 type: 'value',
-                name: '次數',
+                name: title[0],
                 position: 'left',
                 axisLine: {
                     lineStyle: {
@@ -156,7 +157,7 @@
             },
             {
                 type: 'value',
-                name: '得分',
+                name: title[1],
                 position: 'right',
                 offset: 60,
                 axisLine: {
@@ -171,7 +172,7 @@
             },
             {
                 type: 'value',
-                name: '命中率',
+                name: title[2],
                 position: 'right',
                 axisLine: {
                     lineStyle: {
@@ -186,19 +187,19 @@
         ],
         series: [
             {
-                name: '投籃次數',
+                name: title[0],
                 type: 'bar',
                 data: values,
                 yAxisIndex: 0
             },
             {
-                name: '得分',
+                name: title[1],
                 type: 'bar',
                 data: values2,
                 yAxisIndex: 1
             },
             {
-                name: '命中率',
+                name: title[2],
                 type: 'line',
                 data: values3,
                 yAxisIndex: 2,
@@ -248,7 +249,8 @@
                     });
                     tableBody.appendChild(tr);
                 });
-                get_echart(myChart,data.x_data,data.y_data,data.y2_data,data.y3_data)
+                const title =['上場數','場均時間','平均得分']
+                get_echart(myChart,data.x_data,data.y_data,data.y2_data,data.y3_data,title)
                 
             });
         
