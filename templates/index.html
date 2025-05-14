@@ -84,9 +84,9 @@
     var chartDom = document.getElementById('main');
     var myChart = echarts.init(chartDom);
 
-    get_echart()
+    get_echart(myChart,labels,values,values2,values3)
 
-    function get_echart(){
+    function get_echart(myChart,labels,values,values2,values3){
         
         var option;
 
@@ -248,9 +248,10 @@
                     });
                     tableBody.appendChild(tr);
                 });
-                
+                get_echart(myChart,data.x_data,data.y_data,data.y2_data,data.y3_data)
                 
             });
+        
 
 
     });

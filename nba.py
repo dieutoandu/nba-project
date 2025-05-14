@@ -38,8 +38,16 @@ def get_player(team):
         soup_w=BeautifulSoup(resp_w.text,'lxml')
         player_columns=[i.text for i in soup_w.find('table',class_="stable matchup sortable").find_all('th')]
         player_values=[i.text.strip().split('\n') for i in soup_w.find('table',class_="stable matchup sortable").find_all('tr')[1:]]
+
+        df=pd.DataFrame(player_values,columns=player_columns).dropna()
+        x_data=df['姓名'].values.tolist()
+        y_data=df['上場數'].astype(int).values.tolist()
+        y2_data=df['場均時間'].astype(float).values.tolist()
+        y3_data=df['平均得分'].astype(float).values.tolist()
+
+
         
-    return player_columns,player_values
+    return player_columns,player_values,x_data,y_data,y2_data,y3_data
 
 
 if __name__ == "__main__" :
