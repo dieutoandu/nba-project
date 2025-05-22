@@ -249,8 +249,15 @@
                     });
                     tableBody.appendChild(tr);
                 });
-                const title =['上場數','場均時間','平均得分']
-                get_echart(myChart,data.x_data,data.y_data,data.y2_data,data.y3_data,title)
+                if (selectedTeam != "all"){
+                    const title =['上場數','場均時間','平均得分']
+                    get_echart(myChart,data.x_data,data.y_data,data.y2_data,data.y3_data,title)
+                }
+                else{
+                    const title=['投籃次數', '得分', '命中率']
+                    get_echart(myChart,labels,values,values2,values3 ,title)
+                }
+                
                 
             });
         
