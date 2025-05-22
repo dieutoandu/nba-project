@@ -50,5 +50,27 @@ def get_player(team):
     return player_columns,player_values,x_data,y_data,y2_data,y3_data
 
 
+def get_nba_radar(team):
+    url="https://tw-nba.udn.com/nba/stats/teams"
+    resp=requests.get(url)
+    soup=BeautifulSoup(resp.text,'lxml')
+    columns=[i.text for i in soup.find("table",class_="stable matchup standings sortable").find_all('tr')[0].find_all("th")]
+    datas=[i.text.split() for i in soup.find("table",class_="stable matchup standings sortable").find_all('tr')[1:]]
+    df=pd.DataFrame(datas,columns=columns)
+    df=df.dropna()
+
+    score=[]
+    df_1=df[["球隊","進攻籃板","防守籃板","籃粄","助攻","失誤","抄截"]]
+    radars=[{i[0]: i[1:]} for i in df_1.values.tolist()]
+    for radar in radars:
+        if team in radar:
+            score=[float(i) for i in radar[team]]
+            
+            
+
+    return score
+
+
+
 if __name__ == "__main__" :
-    print(get_player('雷霆'))
+    print(get_nba_radar('雷霆'))

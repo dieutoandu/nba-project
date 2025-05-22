@@ -16,6 +16,8 @@
 
     <div id="main" style="width: 1000px;height:400px; margin: 0 auto;"></div>
 
+    <div id="main_1" style="width: 800px;height:400px; margin: 0 auto;"></div>
+
 
     <form action="" style="text-align: center;">
 
@@ -84,8 +86,14 @@
     var chartDom = document.getElementById('main');
     var myChart = echarts.init(chartDom);
 
+    var chartDom_1 = document.getElementById('main_1');
+    var myChart_1 = echarts.init(chartDom_1);
+
     const title=['投籃次數', '得分', '命中率']
     get_echart(myChart,labels,values,values2,values3 ,title)
+
+    const radar=[0,0,0,0,0]
+    get_radar(myChart_1,radar)
 
     function get_echart(myChart,labels,values,values2,values3,title){
         
@@ -216,6 +224,57 @@
     myChart.setOption(option);
     }
     
+    function get_radar(myChart_1,radar){
+        var option;
+
+        option = {
+        title: {
+            text: '雷达图'
+        },
+        legend: {
+            data: ["NBA"]
+        },
+        radar: {
+            // shape: 'circle',
+            indicator: [
+            { name: '進攻籃板', max: 25 },
+            { name: '防守籃板', max: 40 },
+            { name: '籃粄', max: 60 },
+            { name: '助攻', max: 35 },
+            { name: '失誤', max: 17 },
+            { name: '抄截', max: 11 }
+            ]
+        },
+        series: [
+            {
+            name: 'NBA 數據',
+            type: 'radar',
+            data: [
+                {
+                value: radar,
+                name: 'NBA',
+                lineStyle: {
+                    color: '#FF5722',  // 線條顏色
+                    width: 3,          // 線條寬度
+                    type: 'solid'      // 線條樣式：'solid', 'dashed', 'dotted'
+                },
+                areaStyle: {
+                    color: 'rgba(255,87,34,0.3)'  // 區域填色（半透明）
+                },
+                itemStyle: {
+                    color: '#FF5722'  // 點的顏色
+                }
+                },
+                
+            ]
+            }
+        ]
+        };
+
+        option && myChart_1.setOption(option);
+    }
+    
+
 
 
     teamsEl.addEventListener("change", () => {
@@ -252,12 +311,31 @@
                 if (selectedTeam != "all"){
                     const title =['上場數','場均時間','平均得分']
                     get_echart(myChart,data.x_data,data.y_data,data.y2_data,data.y3_data,title)
+                    
                 }
                 else{
                     const title=['投籃次數', '得分', '命中率']
                     get_echart(myChart,labels,values,values2,values3 ,title)
                 }
                 
+                fetch(`/get_team_radar?team=${selectedTeam}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data.radar);
+                        if (selectedTeam != 'all'){
+                            get_radar(myChart_1,data.radar)
+                        }
+                        else{
+                            let radar=[0,0,0,0,0]
+                            get_radar(myChart_1,radar)
+                        }
+                        
+                        
+                    
+
+
+                        
+                    })
                 
             });
         

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import pandas as pd
 import json
-from nba import get_nba, get_player
+from nba import get_nba, get_player,get_nba_radar
 from bs4 import BeautifulSoup
 import requests
 
@@ -41,6 +41,18 @@ def get_team_data_table():
         df = pd.DataFrame(player_values, columns=player_columns)
 
     return json.dumps({"datas": df.values.tolist(), "columns": df.columns.tolist() , "x_data":x_data, "y_data":y_data ,"y2_data":y2_data,"y3_data":y3_data})
+
+
+@app.route("/get_team_radar")
+def get_radar():
+    team = request.args.get("team", "all")
+    radar=[0,0,0,0,0]
+
+    if team != "all":
+        radar=get_nba_radar(team)
+    
+    return json.dumps({"radar":radar})
+
 
 
 if __name__ == "__main__":
