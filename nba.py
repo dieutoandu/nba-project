@@ -1,7 +1,7 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-
+import pymysql
 
 def get_nba():
     url="https://tw-nba.udn.com/nba/stats/teams"
@@ -70,7 +70,44 @@ def get_nba_radar(team):
 
     return score
 
+def get_all_player():
+    columns,datas=None,None
+    conn=None
+    try:
+        conn=open_db()
+        cur=conn.cursor()
+        sqlstr="select * from all_player"
+        cur.execute(sqlstr)
+        columns=[col[0] for col in cur.description]
+        datas=cur.fetchall()
+
+    except Exception as e :
+        print(e)
+    finally:
+        if conn is not None:
+            conn.close()
+    
+    return columns,datas
+    
+
+
+def open_db():
+    conn=None
+    try:
+        conn=pymysql.connect(
+        host='127.0.0.1',
+        port= 3306,
+        user='root',
+        password='12345678',
+        db='nba_player'
+        )
+    except Exception as e :
+        print("open_db erro : ",e )
+
+    return conn
+
+
 
 
 if __name__ == "__main__" :
-    print(get_nba_radar('雷霆'))
+    print(get_all_player())

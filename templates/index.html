@@ -21,8 +21,8 @@
 
     <form action="" style="text-align: center;">
 
-        <label for="team">球隊</label>
-        <select name="team" id="team">
+        <label for="team" class="dropdown-label">球隊</label>
+        <select name="team" id="team" class="dropdown-select">
             <option value="all">全部</option>
             {% for team in teams %}
             <option value="{{team}}">{{team}}</option>
@@ -30,13 +30,13 @@
         </select>
 
 
-        <label for="">數據</label>
+        <!-- <label for="">數據</label>
         <select name="columns" id="columns">
             <option value="all">全部</option>
             {% for col in columns[2:] %}
             <option value="{{col}}">{{col}}</option>
             {% endfor %}
-        </select>
+        </select> -->
 
         
     </form>
