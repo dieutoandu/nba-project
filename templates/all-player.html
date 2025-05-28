@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css')}}">
+
+    <title>Document</title>
+</head>
+<body>
+    <h1>球員</h1>
+
+    <div id="main" style="width: 1000px;height:400px; margin: 0 auto;"></div>
+
+    <form action="" style="text-align: center;">
+        <label for="">數據</label>
+        <select name="columns" id="columns">
+            <option value="all">全部</option>
+            {% for col in columns[3:] %}
+            <option value="{{col}}">{{col}}</option>
+            {% endfor %}
+        </select>
+    </form>
+    
+
+    <table border="1">
+        <thead>
+            <tr>
+                {% for col in columns[1:] %}
+                <th>{{col}}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in datas %}
+            <tr>
+                {% for da in data[1:] %}
+                <td>{{da}}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+   
+</body>
+
+<script>
+    const player_data=document.querySelector("#columns");
+    const tableBody = document.querySelector("tbody");
+
+    var chartDom = document.getElementById('main');
+    var myChart = echarts.init(chartDom);
+
+    get_bar_nba()
+
+    function get_bar_nba(){
+        var option;
+
+        // prettier-ignore
+        let dataAxis = ['点', '击', '柱', '子', '或', '者', '两', '指', '在', '触', '屏', '上', '滑', '动', '能', '够', '自', '动', '缩', '放'];
+        // prettier-ignore
+        let data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220];
+        let yMax = 500;
+        let dataShadow = [];
+        for (let i = 0; i < data.length; i++) {
+        dataShadow.push(yMax);
+        }
+        option = {
+        title: {
+            text: '特性示例：渐变色 阴影 点击缩放',
+            subtext: 'Feature Sample: Gradient Color, Shadow, Click Zoom'
+        },
+        xAxis: {
+            data: dataAxis,
+            axisLabel: {
+            inside: true,
+            color: '#fff'
+            },
+            axisTick: {
+            show: false
+            },
+            axisLine: {
+            show: false
+            },
+            z: 10
+        },
+        yAxis: {
+            axisLine: {
+            show: false
+            },
+            axisTick: {
+            show: false
+            },
+            axisLabel: {
+            color: '#999'
+            }
+        },
+        dataZoom: [
+            {
+            type: 'inside'
+            }
+        ],
+        series: [
+            {
+            type: 'bar',
+            showBackground: true,
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: '#83bff6' },
+                { offset: 0.5, color: '#188df0' },
+                { offset: 1, color: '#188df0' }
+                ])
+            },
+            emphasis: {
+                itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#2378f7' },
+                    { offset: 0.7, color: '#2378f7' },
+                    { offset: 1, color: '#83bff6' }
+                ])
+                }
+            },
+            data: data
+            }
+        ]
+        };
+        // Enable data zoom when user click bar.
+        const zoomSize = 6;
+        myChart.on('click', function (params) {
+        console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
+        myChart.dispatchAction({
+            type: 'dataZoom',
+            startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
+            endValue:
+            dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
+        });
+        });
+
+        option && myChart.setOption(option);
+    }
+
+
+
+
+    player_data.addEventListener("change", ()=>{
+        const data=player_data.value
+        //console.log(data);
+        fetch(`/get_player_data?columns=${data}`)
+            .then(response => response.json())
+            .then(data =>{
+                console.log(data);
+
+                tableBody.innerHTML = "";
+                data.datas.forEach(row => {
+                    const tr = document.createElement("tr");
+                    row.slice(1).forEach(cell => {
+                        const td = document.createElement("td");
+                        td.textContent = cell;
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+                
+
+
+                
+            });
+    })
+    
+    
+
+</script>
+</html>

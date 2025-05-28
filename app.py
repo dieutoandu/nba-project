@@ -54,11 +54,43 @@ def get_radar():
     return json.dumps({"radar":radar})
 
 
-@app.route("/get_all_player")
+@app.route("/all-player")
 def open_all_player():
+    
     columns,datas=get_all_player()
 
-    return json.dumps({"columns":columns,"datas":datas})
+    df=pd.DataFrame(datas,columns=columns)
+
+    df.columns = ['id','姓名', '位置', '出賽數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
+
+
+    datas=df.values.tolist()
+    columns=df.columns.tolist()
+
+    return render_template('all-player.html',columns=columns,datas=datas )
+
+@app.route("/get_player_data")
+def player_data():
+    
+    player_data = request.args.get("columns", "all")
+
+    columns,datas=get_all_player()
+    df=pd.DataFrame(datas,columns=columns)
+    df.columns = ['id','姓名', '位置', '出賽數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
+
+
+    if player_data in df.columns.tolist():
+        df=df.sort_values(by=player_data,ascending=False)[:5]
+        
+        datas=df.astype(str).values.tolist()
+
+    else:
+        
+        datas=df.astype(str).values.tolist()
+    columns=df.columns.tolist()
+
+    return json.dumps({"datas":datas})
+
 
 
 
