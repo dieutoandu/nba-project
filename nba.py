@@ -91,6 +91,17 @@ def get_all_player():
     
 
 def eff(df):
+    df['場均時間']=df['場均時間'].astype(float)
+    df['平均得分']=df['平均得分'].astype(float)
+    df['籃板']=df['籃板'].astype(float)
+    df['助攻']=df['助攻'].astype(float)
+    df['抄截']=df['抄截'].astype(float)
+    df['阻攻']=df['阻攻'].astype(float)
+    df['投籃命中率']=df['投籃命中率'].replace('%', '').astype(float)
+    df['三分命中率']=df['三分命中率'].replace('%', '').astype(float)
+    df['罰球命中率']=df['罰球命中率'].replace('%', '').astype(float)
+    df['失誤']=df['失誤'].astype(int)
+    df['犯規']=df['犯規'].astype(int)
     eff = (
             df['平均得分']* 1.0 +
             df['籃板']* 1.2 +

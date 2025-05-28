@@ -80,15 +80,18 @@ def player_data():
 
     if player_data in df.columns.tolist():
         df=df.sort_values(by=player_data,ascending=False)[:5]
+        EFF=eff(df)
+        # print(df)
+        # print(df.info())
         
         datas=df.astype(str).values.tolist()
 
     else:
-        
+        EFF=eff(df)
         datas=df.astype(str).values.tolist()
     columns=df.columns.tolist()
 
-    return json.dumps({"datas":datas})
+    return json.dumps({"datas":datas,"EFF":EFF})
 
 
 
