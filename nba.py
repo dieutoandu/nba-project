@@ -90,6 +90,17 @@ def get_all_player():
     return columns,datas
     
 
+def eff(df):
+    eff = (
+            df['平均得分']* 1.0 +
+            df['籃板']* 1.2 +
+            df['助攻']* 1.5 +
+            df['抄截']* 2.0 +
+            df['阻攻']* 2.0 -
+            (df['失誤']* 1.00 / df['上場數'])
+        ).fillna(0).round(2).astype(float)
+    return eff.values.tolist()
+
 
 def open_db():
     conn=None
@@ -110,4 +121,19 @@ def open_db():
 
 
 if __name__ == "__main__" :
-    print(get_all_player())
+    columns,datas=get_all_player()
+    df=pd.DataFrame(datas,columns=columns)
+    df.columns = ['id','姓名', '位置', '上場數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
+    df['上場數']=df['上場數'].astype(int)
+    df['場均時間']=df['場均時間'].astype(float)
+    df['平均得分']=df['平均得分'].astype(float)
+    df['籃板']=df['籃板'].astype(float)
+    df['助攻']=df['助攻'].astype(float)
+    df['抄截']=df['抄截'].astype(float)
+    df['阻攻']=df['阻攻'].astype(float)
+    df['投籃命中率']=df['投籃命中率'].replace('%', '').astype(float)
+    df['三分命中率']=df['三分命中率'].replace('%', '').astype(float)
+    df['罰球命中率']=df['罰球命中率'].replace('%', '').astype(float)
+    df['失誤']=df['失誤'].astype(int)
+    df['犯規']=df['犯規'].astype(int)
+    print(eff(df))

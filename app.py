@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import pandas as pd
 import json
-from nba import get_nba, get_player,get_nba_radar,get_all_player
+from nba import get_nba, get_player,get_nba_radar,get_all_player,eff
 from bs4 import BeautifulSoup
 import requests
 
@@ -61,7 +61,7 @@ def open_all_player():
 
     df=pd.DataFrame(datas,columns=columns)
 
-    df.columns = ['id','姓名', '位置', '出賽數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
+    df.columns = ['id','姓名', '位置', '上場數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
 
 
     datas=df.values.tolist()
@@ -76,8 +76,7 @@ def player_data():
 
     columns,datas=get_all_player()
     df=pd.DataFrame(datas,columns=columns)
-    df.columns = ['id','姓名', '位置', '出賽數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
-
+    df.columns = ['id','姓名', '位置', '上場數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
 
     if player_data in df.columns.tolist():
         df=df.sort_values(by=player_data,ascending=False)[:5]
