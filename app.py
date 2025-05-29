@@ -63,11 +63,13 @@ def open_all_player():
 
     df.columns = ['id','姓名', '位置', '上場數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
 
+    EFF=eff(df)
+    all_player_name=df['姓名'].values.tolist()
 
     datas=df.values.tolist()
     columns=df.columns.tolist()
 
-    return render_template('all-player.html',columns=columns,datas=datas )
+    return render_template('all-player.html',columns=columns,datas=datas,y_data=EFF,x_data=all_player_name)
 
 @app.route("/get_player_data")
 def player_data():
@@ -80,6 +82,7 @@ def player_data():
 
     if player_data in df.columns.tolist():
         df=df.sort_values(by=player_data,ascending=False)[:5]
+        all_player_name=df['姓名'].values.tolist()
         EFF=eff(df)
         # print(df)
         # print(df.info())
@@ -89,9 +92,10 @@ def player_data():
     else:
         EFF=eff(df)
         datas=df.astype(str).values.tolist()
+        all_player_name=df['姓名'].values.tolist()
     columns=df.columns.tolist()
 
-    return json.dumps({"datas":datas,"EFF":EFF})
+    return json.dumps({"datas":datas,"y_data":EFF,"x_data":all_player_name})
 
 
 

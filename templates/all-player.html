@@ -9,14 +9,34 @@
 
     <title>Document</title>
 </head>
+
+<style>
+    .a_button{ 
+        display: inline-block;        /* 讓 <a> 可以設定寬高、padding 等 */
+        padding: 8px 16px;            /* 內距：上下 8px，左右 16px */
+        background-color: #007bff;    /* 背景色：亮藍色 (Bootstrap 藍) */
+        color: white;                 /* 文字顏色：白色 */
+        border-radius: 4px;           /* 圓角邊框：4px */
+        text-decoration: none;        /* 去掉底線 */
+        font-weight: bold;            /* 粗體字 */
+        transition: background-color 0.3s; /* 背景色平滑變化 */
+    }
+    .center-box {
+        width: 60%;
+        margin: 20px auto;   /* 上下 20px，左右自動 */
+        padding: 20px;
+        text-align: center;
+    }
+</style>
+
 <body>
     <h1>球員</h1>
 
     <div id="main" style="width: 1000px;height:400px; margin: 0 auto;"></div>
 
     <form action="" style="text-align: center;">
-        <label for="">數據</label>
-        <select name="columns" id="columns">
+        <label for="" class="dropdown-label">數據</label>
+        <select name="columns" id="columns" class="dropdown-select">
             <option value="all">全部</option>
             {% for col in columns[3:] %}
             <option value="{{col}}">{{col}}</option>
@@ -24,7 +44,13 @@
         </select>
     </form>
     
+    <div class="center-box"><a href="/" class="a_button">首頁</a></div>
 
+
+    <div id="chart_data"
+        data-labels='{{x_data | tojson | safe}}' data-values='{{y_data | tojson | safe}}'>
+    </div>
+    
     <table border="1">
         <thead>
             <tr>
@@ -50,96 +76,118 @@
     const player_data=document.querySelector("#columns");
     const tableBody = document.querySelector("tbody");
 
+
+    const chartdata=document.querySelector('#chart_data');
+    const labels=JSON.parse(chartdata.dataset.labels);
+    const values=JSON.parse(chartdata.dataset.values);
+
     var chartDom = document.getElementById('main');
     var myChart = echarts.init(chartDom);
 
-    get_bar_nba()
+    get_bar_nba(myChart,labels,values)
 
-    function get_bar_nba(){
-        var option;
+    function get_bar_nba(myChart, shortLabels, values) {
+    const dataAxis = labels;
+    const data = values;
 
-        // prettier-ignore
-        let dataAxis = ['点', '击', '柱', '子', '或', '者', '两', '指', '在', '触', '屏', '上', '滑', '动', '能', '够', '自', '动', '缩', '放'];
-        // prettier-ignore
-        let data = [220, 182, 191, 234, 290, 330, 310, 123, 442, 321, 90, 149, 210, 122, 133, 334, 198, 123, 125, 220];
-        let yMax = 500;
-        let dataShadow = [];
-        for (let i = 0; i < data.length; i++) {
-        dataShadow.push(yMax);
-        }
-        option = {
+    const option = {
         title: {
-            text: '特性示例：渐变色 阴影 点击缩放',
-            subtext: 'Feature Sample: Gradient Color, Shadow, Click Zoom'
+            text: '球員數據圖表',
+            subtext: '點擊長條可縮放查看細節',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            },
+            formatter: (params) => {
+                const { name, value } = params[0];
+                return `${name}<br/>數值: ${value}`;
+            }
         },
         xAxis: {
+            type: 'category',
             data: dataAxis,
             axisLabel: {
-            inside: true,
-            color: '#fff'
+                show: false
             },
             axisTick: {
-            show: false
+                alignWithLabel: true
             },
             axisLine: {
-            show: false
+                lineStyle: {
+                    color: '#ccc'
+                }
             },
             z: 10
         },
         yAxis: {
-            axisLine: {
-            show: false
+            type: 'value',
+            name: '數值',
+            nameTextStyle: {
+                fontWeight: 'bold'
             },
-            axisTick: {
-            show: false
+            axisLine: {
+                lineStyle: {
+                    color: '#ccc'
+                }
+            },
+            splitLine: {
+                lineStyle: {
+                    type: 'dashed',
+                    color: '#eee'
+                }
             },
             axisLabel: {
-            color: '#999'
+                color: '#666'
             }
         },
         dataZoom: [
             {
-            type: 'inside'
+                type: 'inside'
+            },
+            {
+                type: 'slider',
+                start: 0,
+                end: 100
             }
         ],
         series: [
             {
-            type: 'bar',
-            showBackground: true,
-            itemStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                { offset: 0, color: '#83bff6' },
-                { offset: 0.5, color: '#188df0' },
-                { offset: 1, color: '#188df0' }
-                ])
-            },
-            emphasis: {
+                type: 'bar',
+                data: data,
                 itemStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                    { offset: 0, color: '#2378f7' },
-                    { offset: 0.7, color: '#2378f7' },
-                    { offset: 1, color: '#83bff6' }
-                ])
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#83bff6' },
+                        { offset: 0.5, color: '#188df0' },
+                        { offset: 1, color: '#188df0' }
+                    ])
+                },
+                emphasis: {
+                    itemStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: '#2378f7' },
+                            { offset: 0.7, color: '#2378f7' },
+                            { offset: 1, color: '#83bff6' }
+                        ])
+                    }
                 }
-            },
-            data: data
             }
         ]
-        };
-        // Enable data zoom when user click bar.
-        const zoomSize = 6;
-        myChart.on('click', function (params) {
-        console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
+    };
+
+    const zoomSize = 6;
+    myChart.on('click', function (params) {
         myChart.dispatchAction({
             type: 'dataZoom',
             startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
-            endValue:
-            dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
+            endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
         });
-        });
+    });
 
-        option && myChart.setOption(option);
-    }
+    myChart.setOption(option);
+}
 
 
 
@@ -161,7 +209,9 @@
                         tr.appendChild(td);
                     });
                     tableBody.appendChild(tr);
+
                 });
+                get_bar_nba(myChart,data.x_data,data.y_data)
                 
 
 

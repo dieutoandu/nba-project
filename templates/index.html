@@ -9,6 +9,24 @@
 
 </head>
 
+<style>
+    .a_button{ 
+        display: inline-block;        /* 讓 <a> 可以設定寬高、padding 等 */
+        padding: 8px 16px;            /* 內距：上下 8px，左右 16px */
+        background-color: #007bff;    /* 背景色：亮藍色 (Bootstrap 藍) */
+        color: white;                 /* 文字顏色：白色 */
+        border-radius: 4px;           /* 圓角邊框：4px */
+        text-decoration: none;        /* 去掉底線 */
+        font-weight: bold;            /* 粗體字 */
+        transition: background-color 0.3s; /* 背景色平滑變化 */
+    }
+    .center-box {
+        width: 60%;
+        margin: 20px auto;   /* 上下 20px，左右自動 */
+        padding: 20px;
+        text-align: center;
+    }
+</style>
 
 <body>
     <h1 style="text-align: center;">NBA 數據</h1>
@@ -40,6 +58,8 @@
 
         
     </form>
+    <div class="center-box"><a href="/all-player" class="a_button">球員數據</a></div>
+    
 
     <div id="chart_data" data-labels='{{x_data | tojson | safe}}' data-values='{{y_data | tojson | safe}}' data-values2='{{y2_data | tojson | safe}}' data-values3='{{y3_data | tojson | safe}}'></div>
 
@@ -72,7 +92,7 @@
 <script>
     const teamsEl = document.querySelector("#team");
     const tableBody = document.querySelector("tbody");
-    const headBody= document.querySelector("thead")
+    const headBody= document.querySelector("thead");
 
     const chardata= document.querySelector("#chart_data");
     
