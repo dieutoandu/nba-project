@@ -84,8 +84,8 @@ def player_data():
         df=df.sort_values(by=player_data,ascending=False)[:5]
         all_player_name=df['姓名'].values.tolist()
         EFF=eff(df)
-        # print(df)
-        # print(df.info())
+        print(df)
+        print(df.info())
         
         datas=df.astype(str).values.tolist()
 

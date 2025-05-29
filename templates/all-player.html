@@ -86,108 +86,90 @@
 
     get_bar_nba(myChart,labels,values)
 
-    function get_bar_nba(myChart, shortLabels, values) {
-    const dataAxis = labels;
-    const data = values;
+    function get_bar_nba(myChart,labels,values){
+        var option;
 
-    const option = {
+        // prettier-ignore
+        let dataAxis = labels;
+        // prettier-ignore
+        let data = values;
+        let yMax = 500;
+        let dataShadow = [];
+        for (let i = 0; i < data.length; i++) {
+        dataShadow.push(yMax);
+        }
+        option = {
         title: {
-            text: '球員數據圖表',
-            subtext: '點擊長條可縮放查看細節',
-            left: 'center'
-        },
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-                type: 'shadow'
-            },
-            formatter: (params) => {
-                const { name, value } = params[0];
-                return `${name}<br/>數值: ${value}`;
-            }
+            text: '特性示例：渐变色 阴影 点击缩放',
+            subtext: 'Feature Sample: Gradient Color, Shadow, Click Zoom'
         },
         xAxis: {
-            type: 'category',
             data: dataAxis,
             axisLabel: {
-                show: false
+            inside: true,
+            color: '#fff'
             },
             axisTick: {
-                alignWithLabel: true
+            show: false
             },
             axisLine: {
-                lineStyle: {
-                    color: '#ccc'
-                }
+            show: false
             },
             z: 10
         },
         yAxis: {
-            type: 'value',
-            name: '數值',
-            nameTextStyle: {
-                fontWeight: 'bold'
-            },
             axisLine: {
-                lineStyle: {
-                    color: '#ccc'
-                }
+            show: false
             },
-            splitLine: {
-                lineStyle: {
-                    type: 'dashed',
-                    color: '#eee'
-                }
+            axisTick: {
+            show: false
             },
             axisLabel: {
-                color: '#666'
+            color: '#999'
             }
         },
         dataZoom: [
             {
-                type: 'inside'
-            },
-            {
-                type: 'slider',
-                start: 0,
-                end: 100
+            type: 'inside'
             }
         ],
         series: [
             {
-                type: 'bar',
-                data: data,
+            type: 'bar',
+            showBackground: true,
+            itemStyle: {
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                { offset: 0, color: '#83bff6' },
+                { offset: 0.5, color: '#188df0' },
+                { offset: 1, color: '#188df0' }
+                ])
+            },
+            emphasis: {
                 itemStyle: {
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: '#83bff6' },
-                        { offset: 0.5, color: '#188df0' },
-                        { offset: 1, color: '#188df0' }
-                    ])
-                },
-                emphasis: {
-                    itemStyle: {
-                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                            { offset: 0, color: '#2378f7' },
-                            { offset: 0.7, color: '#2378f7' },
-                            { offset: 1, color: '#83bff6' }
-                        ])
-                    }
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: '#2378f7' },
+                    { offset: 0.7, color: '#2378f7' },
+                    { offset: 1, color: '#83bff6' }
+                ])
                 }
+            },
+            data: data
             }
         ]
-    };
-
-    const zoomSize = 6;
-    myChart.on('click', function (params) {
+        };
+        const zoomSize = 6;
+        myChart.on('click', function (params) {
+        console.log(dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)]);
         myChart.dispatchAction({
             type: 'dataZoom',
             startValue: dataAxis[Math.max(params.dataIndex - zoomSize / 2, 0)],
-            endValue: dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
+            endValue:
+            dataAxis[Math.min(params.dataIndex + zoomSize / 2, data.length - 1)]
         });
-    });
+        });
 
-    myChart.setOption(option);
-}
+        option && myChart.setOption(option);
+    }
 
 
 
