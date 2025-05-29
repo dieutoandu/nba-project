@@ -100,8 +100,19 @@
         }
         option = {
         title: {
-            text: '特性示例：渐变色 阴影 点击缩放',
-            subtext: 'Feature Sample: Gradient Color, Shadow, Click Zoom'
+            text: '球員數據圖表',
+            subtext: '點擊長條可縮放查看細節',
+            left: 'center'
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+            type: 'shadow'
+            },
+            formatter: (params) => {
+                const { name, value } = params[0];
+                return `${name}<br/>數值: ${value}`;
+            }
         },
         xAxis: {
             data: dataAxis,
