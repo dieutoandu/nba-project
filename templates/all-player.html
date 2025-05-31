@@ -34,6 +34,8 @@
 
     <div id="main" style="width: 1000px;height:400px; margin: 0 auto;"></div>
 
+    <div id="main_1" style="width: 1000px;height:400px; margin: 0 auto;"></div>
+
     <form action="" style="text-align: center;">
         <label for="" class="dropdown-label">數據</label>
         <select name="columns" id="columns" class="dropdown-select">
@@ -84,7 +86,17 @@
     var chartDom = document.getElementById('main');
     var myChart = echarts.init(chartDom);
 
+    var chartDom_1 = document.getElementById('main_1');
+    var myChart_1 = echarts.init(chartDom_1);
+
+    
+
     get_bar_nba(myChart,labels,values)
+
+    const score=[0,0,0,0,0]
+    const player_name=['','','','','']
+    get_radar_player(score,player_name)
+
 
     function get_bar_nba(myChart,labels,values){
         var option;
@@ -182,13 +194,166 @@
         option && myChart.setOption(option);
     }
 
+    function get_radar_player(score,player_name){
+        var option;
 
+        // Schema:
+        // date,AQIindex,PM2.5,PM10,CO,NO2,SO2
+        const data1 = [
+        score[0],
+      
+        ];
+        const data2 = [
+        score[1],
+    
+        ];
+        const data3 = [
+        score[2],
+
+        ];
+        const data4 = [
+        score[3],
+
+        ];
+        const data5 = [
+        score[4],
+
+        ];
+        const lineStyle = {
+        width: 1,
+        opacity: 0.5
+        };
+        option = {
+        backgroundColor: '#161627',
+        title: {
+            text: 'AQI - Radar',
+            left: 'center',
+            textStyle: {
+            color: '#eee'
+            }
+        },
+        legend: {
+            bottom: 5,
+            data: player_name,
+            itemGap: 20,
+            textStyle: {
+            color: '#fff',
+            fontSize: 14
+            },
+            selectedMode: 'single'
+        },
+        radar: {
+            indicator: [
+            { name: '平均得分', max: 35 },
+            { name: '籃板', max: 15 },
+            { name: '助攻', max: 15 },
+            { name: '抄截', max: 5 },
+            { name: '阻攻', max: 5 },
+            { name: '總失誤', max: 355 }
+            ],
+            shape: 'circle',
+            splitNumber: 5,
+            axisName: {
+            color: 'rgb(238, 197, 102)'
+            },
+            splitLine: {
+            lineStyle: {
+                color: [
+                'rgba(238, 197, 102, 0.1)',
+                'rgba(238, 197, 102, 0.2)',
+                'rgba(238, 197, 102, 0.4)',
+                'rgba(238, 197, 102, 0.6)',
+                'rgba(238, 197, 102, 0.8)',
+                'rgba(238, 197, 102, 1)'
+                ].reverse()
+            }
+            },
+            splitArea: {
+            show: false
+            },
+            axisLine: {
+            lineStyle: {
+                color: 'rgba(238, 197, 102, 0.5)'
+            }
+            }
+        },
+        series: [
+            {
+            name: player_name[0],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data1,
+            symbol: 'none',
+            itemStyle: {
+                color: '#F9713C'
+            },
+            areaStyle: {
+                opacity: 0.1
+            }
+            },
+            {
+            name: player_name[1],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data2,
+            symbol: 'none',
+            itemStyle: {
+                color: '#4BC0C0'
+            },
+            areaStyle: {
+                opacity: 0.05
+            }
+            },
+            {
+            name: player_name[2],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data3,
+            symbol: 'none',
+            itemStyle: {
+                color: '#9966FF'
+            },
+            areaStyle: {
+                opacity: 0.05
+            }
+            },
+            {
+            name: player_name[3],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data3,
+            symbol: 'none',
+            itemStyle: {
+                color: '#FFCD56'
+            },
+            areaStyle: {
+                opacity: 0.05
+            }
+            },
+            {
+            name: player_name[4],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data3,
+            symbol: 'none',
+            itemStyle: {
+                color: '#36A2EB'
+            },
+            areaStyle: {
+                opacity: 0.05
+            }
+            }
+        ]
+        };
+
+        option && myChart_1.setOption(option);
+    }
 
 
     player_data.addEventListener("change", ()=>{
-        const data=player_data.value
+        const selectedColumn=player_data.value
         //console.log(data);
-        fetch(`/get_player_data?columns=${data}`)
+        fetch(`/get_player_data?columns=${selectedColumn}`)
             .then(response => response.json())
             .then(data =>{
                 console.log(data);
@@ -206,6 +371,20 @@
                 });
                 get_bar_nba(myChart,data.x_data,data.y_data)
                 
+                fetch(`/get_player_radar?columns=${selectedColumn}`)
+                    .then(response => response.json())
+                    .then(data =>{
+                        console.log(data);
+                        
+                        if (data != 'all'){
+                            get_radar_player(data.score,data.player_name)
+                        }
+                        else{
+                            let score=[0,0,0,0,0]
+                            let player_name=['','','','','']
+                            get_radar_player(score,player_name)
+                        }
+                    })
 
 
                 

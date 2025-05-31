@@ -84,8 +84,8 @@ def player_data():
         df=df.sort_values(by=player_data,ascending=False)[:5]
         all_player_name=df['姓名'].values.tolist()
         EFF=eff(df)
-        print(df)
-        print(df.info())
+        # print(df)
+        # print(df.info())
         
         datas=df.astype(str).values.tolist()
 
@@ -98,6 +98,23 @@ def player_data():
     return json.dumps({"datas":datas,"y_data":EFF,"x_data":all_player_name})
 
 
+@app.route("/get_player_radar")
+def player_radar():
+
+    player_data = request.args.get("columns", "all")
+
+    columns,datas=get_all_player()
+    df=pd.DataFrame(datas,columns=columns)
+    df.columns = ['id','姓名', '位置', '上場數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
+
+    score=[]
+    player_name=[]
+    if player_data in df.columns.tolist():
+        df=df.sort_values(by=player_data,ascending=False)[:5]
+        score=df[['平均得分','籃板','助攻','抄截','阻攻','失誤']].astype(float).values.tolist()
+        player_name=df['姓名'].values.tolist()
+    
+    return json.dumps({"score":score,"player_name":player_name})
 
 
 if __name__ == "__main__":
