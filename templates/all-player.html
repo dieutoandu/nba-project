@@ -32,10 +32,10 @@
 <body>
     <h1>球員</h1>
 
-    <div id="main" style="width: 1000px;height:400px; margin: 0 auto;"></div>
-
-    <div id="main_1" style="width: 1000px;height:400px; margin: 0 auto;"></div>
-
+    <div style="display: flex; justify-content: center; gap: 20px; margin: 20px 0;">
+        <div id="main" style="width: 48%; height: 400px;"></div>
+        <div id="main_1" style="width: 48%; height: 500px;"></div>
+    </div>
     <form action="" style="text-align: center;">
         <label for="" class="dropdown-label">數據</label>
         <select name="columns" id="columns" class="dropdown-select">
@@ -93,8 +93,8 @@
 
     get_bar_nba(myChart,labels,values)
 
-    const score=[0,0,0,0,0]
-    const player_name=['','','','','']
+    const score=[0,0,0,0,0,0,0,0,0,0]
+    const player_name=['','','','','','','','','','']
     get_radar_player(score,player_name)
 
 
@@ -219,6 +219,27 @@
         score[4],
 
         ];
+        const data6 = [
+        score[5],
+
+        ];
+        const data7 = [
+        score[6],
+
+        ];
+        const data8 = [
+        score[7],
+
+        ];
+        const data9 = [
+        score[8],
+
+        ];
+        const data10 = [
+        score[9],
+
+        ];
+        
         const lineStyle = {
         width: 1,
         opacity: 0.5
@@ -233,7 +254,7 @@
             }
         },
         legend: {
-            bottom: 5,
+            bottom: "1%",
             data: player_name,
             itemGap: 20,
             textStyle: {
@@ -243,6 +264,7 @@
             selectedMode: 'single'
         },
         radar: {
+            radius: '55%',
             indicator: [
             { name: '平均得分', max: 35 },
             { name: '籃板', max: 15 },
@@ -342,6 +364,71 @@
             areaStyle: {
                 opacity: 0.05
             }
+            },
+            {
+            name: player_name[5],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data6,
+            symbol: 'none',
+            itemStyle: {
+                color: '#FF6384'
+            },
+            areaStyle: {
+                opacity: 0.05
+            }
+            },
+            {
+            name: player_name[6],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data7,
+            symbol: 'none',
+            itemStyle: {
+                color: '#8DD1E1'
+            },
+            areaStyle: {
+                opacity: 0.05
+            }
+            },
+            {
+            name: player_name[7],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data8,
+            symbol: 'none',
+            itemStyle: {
+                color: '#FF9F40'
+            },
+            areaStyle: {
+                opacity: 0.05
+            }
+            },
+            {
+            name: player_name[8],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data9,
+            symbol: 'none',
+            itemStyle: {
+                color: '#C9CBCF'
+            },
+            areaStyle: {
+                opacity: 0.05
+            }
+            },
+            {
+            name: player_name[9],
+            type: 'radar',
+            lineStyle: lineStyle,
+            data: data10,
+            symbol: 'none',
+            itemStyle: {
+                color: '#7CB342'
+            },
+            areaStyle: {
+                opacity: 0.05
+            }
             }
         ]
         };
@@ -380,8 +467,8 @@
                             get_radar_player(data.score,data.player_name)
                         }
                         else{
-                            let score=[0,0,0,0,0]
-                            let player_name=['','','','','']
+                            const score=[0,0,0,0,0,0,0,0,0,0]
+                            const player_name=['','','','','','','','','','']
                             get_radar_player(score,player_name)
                         }
                     })
