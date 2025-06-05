@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 import pandas as pd
 import json
-from nba import get_nba, get_player,get_nba_radar,get_all_player,eff
+from nba import get_nba, get_player,get_nba_radar,get_all_player,eff,get_player_url,calculate_age,parse_height_weight
 from bs4 import BeautifulSoup
 import requests
 
@@ -109,12 +109,50 @@ def player_radar():
 
     score=[]
     player_name=[]
+    datas=[]
+    all_player_body=[]
+    formatted_body = """
+        <div class="player-card">
+        </div>
+        """
     if player_data in df.columns.tolist():
         df=df.sort_values(by=player_data,ascending=False)[:10]
         score=df[['平均得分','籃板','助攻','抄截','阻攻','失誤']].astype(float).values.tolist()
         player_name=df['姓名'].values.tolist()
+        datas=get_player_url(player_name)
+
+        
+        for i in datas:
+            n_player=[]
+            resp_p=requests.get(i[2])
+            soup_p=BeautifulSoup(resp_p.text,'lxml')
+            player=soup_p.find('div',class_="team_head").text.replace(" ","").split()
+            n_player.append(player[0])# 姓名
+            n_player.append(player[1])#隊伍
+            n_player.append(player[2])#位置
+            n_player+=parse_height_weight(player[3])#身高體重
+            n_player+=calculate_age(player[4])#年齡
+            all_player_body.append(n_player)
+        
+        for p in all_player_body:
+            formatted_body += f"""
+            <div class="player-card">
+                <strong>姓名:</strong> {p[0]}<br>
+                <strong>{p[1]}</strong> <br>
+                <strong>{p[2]}</strong> <br>
+                <strong>身高:</strong> {p[3]}<br>
+                <strong>體重:</strong> {p[4]}<br>
+                <strong>年齡:</strong> {p[5]}<br>
+                <hr>
+            </div>
+            """
+        
+
+
     
-    return json.dumps({"score":score,"player_name":player_name})
+    return json.dumps({"score":score,"player_name":player_name,"all_player_body":formatted_body})
+
+
 
 
 if __name__ == "__main__":

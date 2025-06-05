@@ -27,6 +27,39 @@
         padding: 20px;
         text-align: center;
     }
+
+    .player_data {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* 每個卡片之間間距 */
+        justify-content: center; /* 置中顯示 */
+        align-items: flex-start;
+        max-width: 80%;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        overflow-y: auto;
+        font-size: 16px;
+        color: #333;
+        text-align: left;      /* 文字靠左 */
+    }
+    .player_data {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    @media (max-width: 600px) {
+    .player-card {
+        width: 220px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: white;
+        padding: 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+}
 </style>
 
 <body>
@@ -36,6 +69,12 @@
         <div id="main" style="width: 48%; height: 400px;"></div>
         <div id="main_1" style="width: 48%; height: 500px;"></div>
     </div>
+
+    <div class="player_data">
+        
+    </div>
+
+
     <form action="" style="text-align: center;">
         <label for="" class="dropdown-label">數據</label>
         <select name="columns" id="columns" class="dropdown-select">
@@ -77,6 +116,8 @@
 <script>
     const player_data=document.querySelector("#columns");
     const tableBody = document.querySelector("tbody");
+
+    const player= document.querySelector(".player_data")
 
 
     const chartdata=document.querySelector('#chart_data');
@@ -465,11 +506,13 @@
                         
                         if (data != 'all'){
                             get_radar_player(data.score,data.player_name)
+                            player.innerHTML = data.all_player_body;
                         }
                         else{
                             const score=[0,0,0,0,0,0,0,0,0,0]
                             const player_name=['','','','','','','','','','']
                             get_radar_player(score,player_name)
+                            player.innerHTML =data.all_player_body;
                         }
                     })
 

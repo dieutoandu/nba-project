@@ -2,6 +2,9 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import pymysql
+import re
+from datetime import datetime
+
 
 def get_nba():
     url="https://tw-nba.udn.com/nba/stats/teams"
@@ -88,7 +91,29 @@ def get_all_player():
             conn.close()
     
     return columns,datas
+
+
+def get_player_url(lis):
+    datas=[]
+    conn=None
+    try:
+        conn=open_db()
+        cur=conn.cursor()
+        for i in lis:
+            data=None
+            sqlstr="select * from all_player_url where name= %s"
+            cur.execute(sqlstr,(i,))
+            
+            data = cur.fetchall()
+            datas.extend(data)
+
+    except Exception as e :
+        print(e)
+    finally:
+        if conn is not None:
+            conn.close()
     
+    return datas
 
 def eff(df):
     df['場均時間']=df['場均時間'].astype(float)
@@ -129,10 +154,60 @@ def open_db():
     return conn
 
 
+def parse_height_weight(text):
+    # 用正則抓出英尺、英寸與磅數
+    match = re.search(r"(\d+)’(\d+)＂/(\d+)", text)
+    if not match:
+        return None
+    
+    feet = int(match.group(1))
+    inches = int(match.group(2))
+    pounds = int(match.group(3))
+
+    # 身高換算：1 英尺 = 30.48 cm, 1 英寸 = 2.54 cm
+    height_cm = round(feet * 30.48 + inches * 2.54, 1)
+
+    # 體重換算：1 磅 = 0.453592 kg
+    weight_kg = round(pounds * 0.453592, 1)
+
+    return [height_cm, weight_kg]
+
+
+def calculate_age(birthdate_str):
+    if "：" in birthdate_str:
+        birthdate_str = birthdate_str.split("：")[1]
+        
+    birthdate = datetime.strptime(birthdate_str, "%Y-%m-%d")
+    today = datetime.today()
+    
+    age = today.year - birthdate.year
+    # 如果今年生日還沒到，要減 1
+    if (today.month, today.day) < (birthdate.month, birthdate.day):
+        age -= 1
+
+    return [age]
+
+
+def get_all_player_url():
+    url="https://tw-nba.udn.com/nba/stats/teams"
+    resp=requests.get(url)
+    soup=BeautifulSoup(resp.text,'lxml')
+    player_url={i.find('a').text:"https://tw-nba.udn.com"+i.find('a').get('href') for i in soup.find("table",class_="stable matchup standings sortable").find_all('tr')[1:-1]}
+
+    all_player=[]
+    for i in player_url:
+        resp_w=requests.get(player_url[i])
+        soup_w=BeautifulSoup(resp_w.text,'lxml')
+        for i in soup_w.find('table',class_="stable matchup sortable").find_all("tr")[1:]:
+            nba_player={j.text:j.get("href") for j in i.find_all("a")}
+            #print(nba_player)
+            all_player.append(nba_player)
+    
+    return all_player
+
+
 
 
 if __name__ == "__main__" :
-    columns,datas=get_all_player()
-    df=pd.DataFrame(datas,columns=columns)
-    df.columns = ['id','姓名', '位置', '上場數', '場均時間', '平均得分', '籃板', '助攻', '抄截', '阻攻','投籃命中率', '三分命中率', '罰球命中率', '失誤', '犯規']
-    print(eff(df))
+    test=['Donovan Mitchell','Darius Garland','Evan Mobley','Max Strus','Trent Forrest']
+    print(get_player_url(test))
