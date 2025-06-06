@@ -73,4 +73,45 @@ table, th, td {
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+@media screen and (max-width: 1024px) {
+  .container {
+    padding: 1.5rem;
+  }
 
+  form {
+    padding: 1rem;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .player-card {
+    margin: 0.5rem;
+  }
+
+  table {
+    font-size: 0.9rem;
+  }
+
+  form {
+    width: 90%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+
+  form {
+    width: 95%;
+  }
+
+  input, select, button {
+    font-size: 0.9rem;
+    padding: 0.6rem;
+  }
+
+  table {
+    font-size: 0.8rem;
+  }
+}
