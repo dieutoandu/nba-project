@@ -5,6 +5,8 @@ import lxml
 import pymysql
 import re
 from datetime import datetime
+from dotenv import load_dotenv
+import os
 
 
 def get_nba():
@@ -138,16 +140,17 @@ def eff(df):
         ).fillna(0).round(2).astype(float)
     return eff.values.tolist()
 
-
+load_dotenv('.env')
 def open_db():
     conn=None
+
     try:
         conn=pymysql.connect(
-        host='127.0.0.1',
-        port= 3306,
-        user='root',
-        password='12345678',
-        db='nba_player'
+        host=os.environ.get("DB_HOST"),
+        port=int(os.environ.get("DB_PORT")),
+        user=os.environ.get("DB_USER"),
+        password=os.environ.get("DB_PASSWORD"),
+        db=os.environ.get("DB_NAME")
         )
     except Exception as e :
         print("open_db erro : ",e )

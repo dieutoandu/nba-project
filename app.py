@@ -4,6 +4,7 @@ import json
 from nba import get_nba, get_player,get_nba_radar,get_all_player,eff,get_player_url,calculate_age,parse_height_weight
 from bs4 import BeautifulSoup
 import requests
+import lxml
 
 
 app = Flask(__name__)
@@ -156,4 +157,4 @@ def player_radar():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
