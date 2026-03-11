@@ -36,7 +36,7 @@ def get_player(team):
     url="https://tw-nba.udn.com/nba/stats/teams"
     resp=requests.get(url)
     soup=BeautifulSoup(resp.text,'lxml')
-    player_url={i.find('a').text:"https://tw-nba.udn.com"+i.find('a').get('href') for i in soup.find("table",class_="stable matchup standings sortable").find_all('tr')[1:-1]}
+    player_url={i.find('a').text.strip():"https://tw-nba.udn.com"+i.find('a').get('href') for i in soup.find("table",class_="stable matchup standings sortable").find_all('tr')[1:-1]}
 
     if team in player_url:
         url_w=player_url[team]
