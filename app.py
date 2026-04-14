@@ -37,6 +37,10 @@ def index():
     )
 
 
+@app.route("/ping")
+def ping():
+    return "ok", 200
+
 @app.route("/get_team_data_table")
 def get_team_data_table():
     team = request.args.get("team", "all")

@@ -210,7 +210,23 @@
 </style>
 
 <body>
-
+    <div id="loading-screen" style="
+        position: fixed; inset: 0; z-index: 9999;
+        background: #0a0c10;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 1.5rem;
+    ">
+        <div style="font-family:'Bebas Neue',sans-serif; font-size:3rem; color:#f5a623; letter-spacing:0.1em;">
+            NBA · STATS
+        </div>
+        <div style="color:#9a9590; font-size:14px; letter-spacing:0.08em;">
+            伺服器啟動中，請稍候...
+        </div>
+        <div style="width:200px; height:3px; background:#1a1e28; border-radius:2px; overflow:hidden;">
+            <div id="loading-bar" style="height:100%; width:0%; background:linear-gradient(90deg,#f5a623,#e84040); border-radius:2px; transition:width 0.4s ease;"></div>
+        </div>
+        <div style="color:#555; font-size:12px;" id="loading-msg">最多等待 30 秒</div>
+    </div>
     <!-- HEADER -->
     <header class="site-header">
         <div class="logo">NBA<span>·</span>STATS</div>
@@ -307,6 +323,35 @@
     const title = ['投籃次數', '得分', '命中率'];
     get_echart(myChart, labels, values, values2, values3, title);
     get_radar(myChart_1, [0, 0, 0, 0, 0, 0]);
+
+    let progress = 0;
+    const bar = document.getElementById('loading-bar');
+    const msg = document.getElementById('loading-msg');
+    const screen = document.getElementById('loading-screen');
+
+    const timer = setInterval(() => {
+        progress = Math.min(progress + (progress < 70 ? 2 : 0.3), 95);
+        bar.style.width = progress + '%';
+    }, 500);
+
+    function hideLoading() {
+        clearInterval(timer);
+        bar.style.width = '100%';
+        setTimeout(() => {
+            screen.style.opacity = '0';
+            screen.style.transition = 'opacity 0.5s';
+            setTimeout(() => screen.remove(), 500);
+        }, 300);
+    }
+
+    // ping 後端，成功才關閉 loading
+    function pingServer() {
+        fetch('/ping')
+            .then(r => { if (r.ok) hideLoading(); else setTimeout(pingServer, 3000); })
+            .catch(() => setTimeout(pingServer, 3000));
+    }
+
+    pingServer();
 
     function get_echart(myChart, labels, values, values2, values3, title) {
         const colors = ['#f5a623', '#e84040', '#4bc8c8'];
