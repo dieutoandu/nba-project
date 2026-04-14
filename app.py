@@ -5,10 +5,21 @@ from nba import get_nba, get_player,get_nba_radar,get_all_player,eff,get_player_
 from bs4 import BeautifulSoup
 import requests
 import lxml
-
+from apscheduler.schedulers.background import BackgroundScheduler
+import os
 
 app = Flask(__name__)
+def ping_self():
+    url = os.environ.get("RENDER_EXTERNAL_URL", "https://nba-project-wkl5.onrender.com/all-player")
+    try:
+        requests.get(url, timeout=10)
+        print("✅ Keep-alive ping sent")
+    except Exception as e:
+        print(f"❌ Ping failed: {e}")
 
+scheduler = BackgroundScheduler()
+scheduler.add_job(ping_self, "interval", minutes=10)
+scheduler.start()
 
 @app.route("/")
 def index():
