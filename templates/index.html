@@ -1,370 +1,413 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NBA_PROJ</title>
-    <link rel="stylesheet" href="{{ url_for('static',filename='style.css')}}">
+    <title>NBA 數據中心</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.6.0/dist/echarts.min.js"></script>
-
+    <link rel="stylesheet" href="{{ url_for('static',filename='style.css')}}">
 </head>
 
 <style>
-    .a_button{ 
-        display: inline-block;        /* 讓 <a> 可以設定寬高、padding 等 */
-        padding: 8px 16px;            /* 內距：上下 8px，左右 16px */
-        background-color: #007bff;    /* 背景色：亮藍色 (Bootstrap 藍) */
-        color: white;                 /* 文字顏色：白色 */
-        border-radius: 4px;           /* 圓角邊框：4px */
-        text-decoration: none;        /* 去掉底線 */
-        font-weight: bold;            /* 粗體字 */
-        transition: background-color 0.3s; /* 背景色平滑變化 */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+        --bg-base:    #0a0c10;
+        --bg-card:    #111318;
+        --bg-lift:    #181c24;
+        --accent:     #f5a623;
+        --accent2:    #e84040;
+        --border:     rgba(245,166,35,0.18);
+        --border-dim: rgba(255,255,255,0.07);
+        --text-1:     #f0ece3;
+        --text-2:     #9a9590;
+        --font-head:  'Bebas Neue', sans-serif;
+        --font-body:  'Noto Sans TC', sans-serif;
+        --radius:     12px;
     }
-    .center-box {
-        width: 60%;
-        margin: 20px auto;   /* 上下 20px，左右自動 */
-        padding: 20px;
+
+    html { scroll-behavior: smooth; }
+
+    body {
+        background: var(--bg-base);
+        color: var(--text-1);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+        position: sticky; top: 0; z-index: 100;
+        background: rgba(10,12,16,0.85);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border-dim);
+        padding: 0 2rem;
+        display: flex; align-items: center; justify-content: space-between;
+        height: 64px;
+    }
+    .site-header .logo {
+        font-family: var(--font-head);
+        font-size: 2rem;
+        letter-spacing: 0.06em;
+        color: var(--text-1);
+    }
+    .site-header .logo span { color: var(--accent); }
+    .nav-link {
+        font-size: 13px; font-weight: 500; letter-spacing: 0.05em;
+        color: var(--text-2); text-decoration: none;
+        padding: 6px 14px; border-radius: 6px;
+        border: 1px solid var(--border-dim);
+        transition: all 0.2s;
+    }
+    .nav-link:hover { color: var(--accent); border-color: var(--border); }
+
+    /* ── HERO ── */
+    .hero {
+        padding: 4rem 2rem 2.5rem;
+        max-width: 1200px; margin: 0 auto;
+        display: flex; align-items: flex-end; justify-content: space-between;
+        gap: 2rem; flex-wrap: wrap;
+    }
+    .hero-title {
+        font-family: var(--font-head);
+        font-size: clamp(3.5rem, 8vw, 7rem);
+        letter-spacing: 0.04em;
+        line-height: 0.9;
+        color: var(--text-1);
+    }
+    .hero-title em {
+        font-style: normal; color: var(--accent);
+        display: block;
+    }
+    .hero-sub {
+        font-size: 13px; color: var(--text-2);
+        letter-spacing: 0.08em; text-transform: uppercase;
+        margin-top: 0.75rem;
+    }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+        max-width: 1200px; margin: 0 auto;
+        padding: 0 2rem 1.5rem;
+        display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    }
+    .filter-label {
+        font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--text-2);
+    }
+    .filter-select {
+        background: var(--bg-card);
+        color: var(--text-1);
+        border: 1px solid var(--border-dim);
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-family: var(--font-body); font-size: 14px;
+        outline: none; cursor: pointer;
+        transition: border-color 0.2s;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9590' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 36px;
+    }
+    .filter-select:focus, .filter-select:hover { border-color: var(--border); }
+
+    /* ── CHARTS SECTION ── */
+    .charts-section {
+        max-width: 1200px; margin: 0 auto;
+        padding: 0 2rem 2rem;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+    }
+    @media (max-width: 800px) { .charts-section { grid-template-columns: 1fr; } }
+
+    .chart-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-dim);
+        border-radius: var(--radius);
+        padding: 1.25rem;
+        position: relative; overflow: hidden;
+    }
+    .chart-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0; height: 2px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .chart-card-title {
+        font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--text-2); margin-bottom: 1rem;
+    }
+    #main, #main_1 { width: 100%; height: 340px; }
+
+    /* ── TABLE SECTION ── */
+    .table-section {
+        max-width: 1200px; margin: 0 auto;
+        padding: 0 2rem 4rem;
+    }
+    .table-header {
+        display: flex; align-items: center; gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    .table-header h2 {
+        font-family: var(--font-head);
+        font-size: 1.8rem; letter-spacing: 0.05em;
+        color: var(--text-1);
+    }
+    .table-badge {
+        font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(245,166,35,0.12);
+        color: var(--accent); border: 1px solid var(--border);
+        padding: 4px 10px; border-radius: 20px;
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-dim);
+    }
+    table {
+        width: 100%; border-collapse: collapse;
+        font-size: 13px; min-width: 640px;
+    }
+    thead { background: var(--bg-lift); }
+    thead th {
+        padding: 12px 14px; text-align: left;
+        font-size: 11px; font-weight: 500; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--text-2);
+        border-bottom: 1px solid var(--border-dim);
+        white-space: nowrap;
+    }
+    tbody tr {
+        border-bottom: 1px solid var(--border-dim);
+        transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: var(--bg-lift); }
+    tbody td {
+        padding: 11px 14px; color: var(--text-1);
+        white-space: nowrap;
+    }
+    tbody tr td:first-child { font-weight: 500; color: var(--accent); }
+
+    /* ── FOOTER ── */
+    .site-footer {
+        border-top: 1px solid var(--border-dim);
+        padding: 1.5rem 2rem;
         text-align: center;
+        font-size: 12px; color: var(--text-2);
+        letter-spacing: 0.05em;
     }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #2a2d35; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3a3d45; }
 </style>
 
 <body>
-    <h1 style="text-align: center;">NBA 數據</h1>
 
+    <!-- HEADER -->
+    <header class="site-header">
+        <div class="logo">NBA<span>·</span>STATS</div>
+        <a href="/all-player" class="nav-link">球員數據 →</a>
+    </header>
 
-    <div style="display: flex; justify-content: center; gap: 20px; margin: 20px 0;">
-        <div id="main" style="width: 48%; height: 400px;"></div>
-        <div id="main_1" style="width: 48%; height: 400px;"></div>
+    <!-- HERO -->
+    <section class="hero">
+        <div>
+            <div class="hero-title">球隊<em>數據</em>分析</div>
+            <p class="hero-sub">NBA · 即時賽季統計</p>
+        </div>
+        <div class="filter-bar" style="padding: 0; max-width: unset; margin: 0;">
+            <span class="filter-label">篩選球隊</span>
+            <select name="team" id="team" class="filter-select">
+                <option value="all">全部球隊</option>
+                {% for team in teams %}
+                <option value="{{team}}">{{team}}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </section>
+
+    <!-- CHARTS -->
+    <section class="charts-section">
+        <div class="chart-card">
+            <div class="chart-card-title">進攻數據綜合圖</div>
+            <div id="main"></div>
+        </div>
+        <div class="chart-card">
+            <div class="chart-card-title">球隊雷達分析</div>
+            <div id="main_1"></div>
+        </div>
+    </section>
+
+    <!-- TABLE -->
+    <section class="table-section">
+        <div class="table-header">
+            <h2>數據排行</h2>
+            <span class="table-badge" id="current-team-badge">全聯盟</span>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        {% for col in columns %}
+                        <th>{{col}}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in datas %}
+                    <tr>
+                        {% for da in data %}
+                        <td>{{da}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <footer class="site-footer">© 2025 NBA Stats · 資料來源：tw-nba.udn.com</footer>
+
+    <div id="chart_data"
+        data-labels='{{x_data | tojson | safe}}'
+        data-values='{{y_data | tojson | safe}}'
+        data-values2='{{y2_data | tojson | safe}}'
+        data-values3='{{y3_data | tojson | safe}}'
+        style="display:none">
     </div>
 
-
-    <form action="" style="text-align: center;">
-
-        <label for="team" class="dropdown-label">球隊</label>
-        <select name="team" id="team" class="dropdown-select">
-            <option value="all">全部</option>
-            {% for team in teams %}
-            <option value="{{team}}">{{team}}</option>
-            {% endfor %}
-        </select>
-
-
-        <!-- <label for="">數據</label>
-        <select name="columns" id="columns">
-            <option value="all">全部</option>
-            {% for col in columns[2:] %}
-            <option value="{{col}}">{{col}}</option>
-            {% endfor %}
-        </select> -->
-
-        
-    </form>
-    <div class="center-box"><a href="/all-player" class="a_button">球員數據</a></div>
-    
-
-    <div id="chart_data" data-labels='{{x_data | tojson | safe}}' data-values='{{y_data | tojson | safe}}' data-values2='{{y2_data | tojson | safe}}' data-values3='{{y3_data | tojson | safe}}'></div>
-
-
-
-    <table border="1">
-        <thead>
-            <tr>
-                {% for col in columns %}
-                <th>{{col}}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for data in datas %}
-            <tr>
-                {% for da in data %}
-                <td>{{da}}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    
-
-   
-
-
 </body>
+
 <script>
     const teamsEl = document.querySelector("#team");
     const tableBody = document.querySelector("tbody");
-    const headBody= document.querySelector("thead");
+    const headBody = document.querySelector("thead");
+    const badge = document.getElementById('current-team-badge');
 
-    const chardata= document.querySelector("#chart_data");
-    
-    const labels=JSON.parse(chardata.dataset.labels);
-    const values=JSON.parse(chardata.dataset.values);
-    const values2=JSON.parse(chardata.dataset.values2);
-    const values3=JSON.parse(chardata.dataset.values3);
+    const chardata = document.querySelector("#chart_data");
+    const labels = JSON.parse(chardata.dataset.labels);
+    const values = JSON.parse(chardata.dataset.values);
+    const values2 = JSON.parse(chardata.dataset.values2);
+    const values3 = JSON.parse(chardata.dataset.values3);
 
-
-    
     var chartDom = document.getElementById('main');
-    var myChart = echarts.init(chartDom);
+    var myChart = echarts.init(chartDom, 'dark');
 
     var chartDom_1 = document.getElementById('main_1');
-    var myChart_1 = echarts.init(chartDom_1);
+    var myChart_1 = echarts.init(chartDom_1, 'dark');
 
-    const title=['投籃次數', '得分', '命中率']
-    get_echart(myChart,labels,values,values2,values3 ,title)
+    const title = ['投籃次數', '得分', '命中率'];
+    get_echart(myChart, labels, values, values2, values3, title);
+    get_radar(myChart_1, [0, 0, 0, 0, 0, 0]);
 
-    const radar=[0,0,0,0,0]
-    get_radar(myChart_1,radar)
-
-    function get_echart(myChart,labels,values,values2,values3,title){
-        
-        var option;
-
-        const colors = ['#5470C6', '#91CC75', '#EE6666'];
-        option = {
-        color: colors,
-        backgroundColor: '#121212',
-        tooltip: {
-            trigger: 'axis',
-            axisPointer: {
-            type: 'cross'
-            }
-        },
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        textStyle: {
-                color: '#fff'
+    function get_echart(myChart, labels, values, values2, values3, title) {
+        const colors = ['#f5a623', '#e84040', '#4bc8c8'];
+        myChart.setOption({
+            backgroundColor: 'transparent',
+            color: colors,
+            tooltip: { trigger: 'axis', axisPointer: { type: 'cross' }, backgroundColor: '#1a1e28', borderColor: 'rgba(245,166,35,0.3)', textStyle: { color: '#f0ece3', fontSize: 13 } },
+            legend: { data: title, top: 0, textStyle: { color: '#9a9590', fontSize: 12 } },
+            grid: { left: '8%', right: '22%', bottom: '14%', top: '14%' },
+            toolbox: { feature: { saveAsImage: { show: true, iconStyle: { borderColor: '#9a9590' } } }, right: 10 },
+            dataZoom: [{ type: 'slider', bottom: '2%', height: 20, backgroundColor: '#111318', fillerColor: 'rgba(245,166,35,0.1)', borderColor: 'rgba(245,166,35,0.2)', textStyle: { color: '#9a9590' } }],
+            xAxis: {
+                type: 'category', data: labels,
+                axisLabel: { color: '#9a9590', fontSize: 11, rotate: 30 },
+                axisLine: { lineStyle: { color: 'rgba(255,255,255,0.08)' } },
+                axisTick: { show: false }
             },
-        grid: {
-            right: '20%',
-            left: '8%',
-            bottom: '10%'
-        },
-        toolbox: {
-            feature: {
-            dataView: { show: true, readOnly: false },
-            restore: { show: true },
-            saveAsImage: { show: true }
-            }
-        },
-        legend: {
-            data: title,
-            textStyle: {
-                color: '#ffffff'
-            }
-        },
-        xAxis: {
-            type: 'category',
-            data: labels,
-            axisLabel: {
-                color: '#ffffff'
-            },
-            axisLine: {
-                lineStyle: {
-                    color: '#888'
-                }
-            }
-        },
-        dataZoom:[{
-            type:'slider',
-            start: 0,
-            end:100
-        }],
-        yAxis: [
-            {
-                type: 'value',
-                name: title[0],
-                position: 'left',
-                axisLine: {
-                    lineStyle: {
-                        color: colors[0]
-                    }
-                },
-                axisLabel: {
-                    formatter: '{value}',
-                    color: '#ffffff'
-                }
-            },
-            {
-                type: 'value',
-                name: title[1],
-                position: 'right',
-                offset: 60,
-                axisLine: {
-                    lineStyle: {
-                        color: colors[1]
-                    }
-                },
-                axisLabel: {
-                    formatter: '{value} 分',
-                    color: '#ffffff'
-                }
-            },
-            {
-                type: 'value',
-                name: title[2],
-                position: 'right',
-                axisLine: {
-                    lineStyle: {
-                        color: colors[2]
-                    }
-                },
-                axisLabel: {
-                    formatter: '{value} %',
-                    color: '#ffffff'
-                }
-            }
-        ],
-        series: [
-            {
-                name: title[0],
-                type: 'bar',
-                data: values,
-                yAxisIndex: 0
-            },
-            {
-                name: title[1],
-                type: 'bar',
-                data: values2,
-                yAxisIndex: 1
-            },
-            {
-                name: title[2],
-                type: 'line',
-                data: values3,
-                yAxisIndex: 2,
-                smooth: true,
-                lineStyle: {
-                    width: 2
-                },
-                symbol: 'circle',
-                symbolSize: 6
-            }
-        ]
-    };
-
-    myChart.setOption(option);
-    }
-    
-    function get_radar(myChart_1,radar){
-        var option;
-
-        option = {
-        title: {
-            text: '雷达图'
-        },
-        legend: {
-            data: ["NBA"]
-        },
-        radar: {
-            // shape: 'circle',
-            indicator: [
-            { name: '進攻籃板', max: 25 },
-            { name: '防守籃板', max: 40 },
-            { name: '籃粄', max: 60 },
-            { name: '助攻', max: 35 },
-            { name: '失誤', max: 17 },
-            { name: '抄截', max: 11 }
+            yAxis: [
+                { type: 'value', name: title[0], nameTextStyle: { color: colors[0], fontSize: 11 }, position: 'left', axisLine: { show: true, lineStyle: { color: colors[0] } }, axisLabel: { color: '#9a9590', fontSize: 11 }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.04)' } } },
+                { type: 'value', name: title[1], nameTextStyle: { color: colors[1], fontSize: 11 }, position: 'right', offset: 55, axisLine: { show: true, lineStyle: { color: colors[1] } }, axisLabel: { formatter: '{value}', color: '#9a9590', fontSize: 11 }, splitLine: { show: false } },
+                { type: 'value', name: title[2], nameTextStyle: { color: colors[2], fontSize: 11 }, position: 'right', axisLine: { show: true, lineStyle: { color: colors[2] } }, axisLabel: { formatter: '{value}%', color: '#9a9590', fontSize: 11 }, splitLine: { show: false } }
+            ],
+            series: [
+                { name: title[0], type: 'bar', data: values, yAxisIndex: 0, barMaxWidth: 24, itemStyle: { color: colors[0], borderRadius: [3, 3, 0, 0] } },
+                { name: title[1], type: 'bar', data: values2, yAxisIndex: 1, barMaxWidth: 24, itemStyle: { color: colors[1], borderRadius: [3, 3, 0, 0] } },
+                { name: title[2], type: 'line', data: values3, yAxisIndex: 2, smooth: true, lineStyle: { width: 2, color: colors[2] }, symbol: 'circle', symbolSize: 5, itemStyle: { color: colors[2] }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(75,200,200,0.2)' }, { offset: 1, color: 'rgba(75,200,200,0)' }] } } }
             ]
-        },
-        series: [
-            {
-            name: 'NBA 數據',
-            type: 'radar',
-            data: [
-                {
-                value: radar,
-                name: 'NBA',
-                lineStyle: {
-                    color: '#FF5722',  // 線條顏色
-                    width: 3,          // 線條寬度
-                    type: 'solid'      // 線條樣式：'solid', 'dashed', 'dotted'
-                },
-                areaStyle: {
-                    color: 'rgba(255,87,34,0.3)'  // 區域填色（半透明）
-                },
-                itemStyle: {
-                    color: '#FF5722'  // 點的顏色
-                }
-                },
-                
-            ]
-            }
-        ]
-        };
-
-        option && myChart_1.setOption(option);
+        });
     }
-    
 
-
+    function get_radar(myChart_1, radar) {
+        myChart_1.setOption({
+            backgroundColor: 'transparent',
+            legend: { data: ['NBA'], bottom: 0, textStyle: { color: '#9a9590', fontSize: 12 } },
+            radar: {
+                shape: 'circle',
+                indicator: [
+                    { name: '進攻籃板', max: 25 },
+                    { name: '防守籃板', max: 40 },
+                    { name: '籃板', max: 60 },
+                    { name: '助攻', max: 35 },
+                    { name: '失誤', max: 17 },
+                    { name: '抄截', max: 11 }
+                ],
+                splitNumber: 4,
+                axisName: { color: '#9a9590', fontSize: 11 },
+                splitLine: { lineStyle: { color: 'rgba(245,166,35,0.12)' } },
+                splitArea: { areaStyle: { color: ['rgba(245,166,35,0.02)', 'rgba(245,166,35,0.04)', 'rgba(245,166,35,0.02)', 'rgba(245,166,35,0.04)'] } },
+                axisLine: { lineStyle: { color: 'rgba(245,166,35,0.2)' } }
+            },
+            series: [{
+                name: 'NBA 數據', type: 'radar',
+                data: [{ value: radar, name: 'NBA', lineStyle: { color: '#f5a623', width: 2 }, areaStyle: { color: 'rgba(245,166,35,0.15)' }, itemStyle: { color: '#f5a623' } }]
+            }]
+        });
+    }
 
     teamsEl.addEventListener("change", () => {
         const selectedTeam = teamsEl.value;
-        
-        
+        badge.textContent = selectedTeam === 'all' ? '全聯盟' : selectedTeam;
 
         fetch(`/get_team_data_table?team=${selectedTeam}`)
-            .then(response => response.json())
+            .then(r => r.json())
             .then(data => {
-                console.log(data);
-                
-                tableBody.innerHTML = ""; // 清空原本的表格內容
+                tableBody.innerHTML = "";
                 headBody.innerHTML = "";
 
                 const headerRow = document.createElement("tr");
-                data.columns.forEach(col =>{
-                    const th =document.createElement("th");
-                    th.textContent=col;
-                    headerRow.append(th)
+                data.columns.forEach(col => {
+                    const th = document.createElement("th");
+                    th.textContent = col;
+                    headerRow.append(th);
                 });
-                headBody.append(headerRow)
+                headBody.append(headerRow);
 
-
-                data.datas.forEach(row => {
+                data.datas.forEach((row, idx) => {
                     const tr = document.createElement("tr");
-                    row.forEach(cell => {
+                    row.forEach((cell, ci) => {
                         const td = document.createElement("td");
                         td.textContent = cell;
                         tr.appendChild(td);
                     });
                     tableBody.appendChild(tr);
                 });
-                if (selectedTeam != "all"){
-                    const title =['上場數','場均時間','平均得分']
-                    get_echart(myChart,data.x_data,data.y_data,data.y2_data,data.y3_data,title)
-                    
+
+                if (selectedTeam !== "all") {
+                    get_echart(myChart, data.x_data, data.y_data, data.y2_data, data.y3_data, ['上場數', '場均時間', '平均得分']);
+                } else {
+                    get_echart(myChart, labels, values, values2, values3, ['投籃次數', '得分', '命中率']);
                 }
-                else{
-                    const title=['投籃次數', '得分', '命中率']
-                    get_echart(myChart,labels,values,values2,values3 ,title)
-                }
-                
+
                 fetch(`/get_team_radar?team=${selectedTeam}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log(data.radar);
-                        if (selectedTeam != 'all'){
-                            get_radar(myChart_1,data.radar)
-                        }
-                        else{
-                            let radar=[0,0,0,0,0]
-                            get_radar(myChart_1,radar)
-                        }
-                        
-                        
-                    
-
-
-                        
-                    })
-                
+                    .then(r => r.json())
+                    .then(d => {
+                        get_radar(myChart_1, selectedTeam !== 'all' ? d.radar : [0, 0, 0, 0, 0, 0]);
+                    });
             });
-        
-
-
     });
 
-
-
+    window.addEventListener('resize', () => {
+        myChart.resize(); myChart_1.resize();
+    });
 </script>
 </html>
