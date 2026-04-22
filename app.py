@@ -155,7 +155,7 @@ def player_radar():
             <div class="player-card">
                 <strong>姓名:</strong> {p[0]}<br>
                 <strong>{p[1]}</strong> <br>
-                <strong>{p[2]}</strong> <br>
+                <strong>{p[2][3:]}</strong> <br>
                 <strong>身高:</strong> {p[3]}<br>
                 <strong>體重:</strong> {p[4]}<br>
                 <strong>年齡:</strong> {p[5]}<br>

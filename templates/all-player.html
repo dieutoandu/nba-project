@@ -346,25 +346,26 @@
     }
 
     function renderPlayerCards(html) {
-        // Parse the incoming HTML string and re-render as styled cards
         const temp = document.createElement('div');
         temp.innerHTML = html;
         const cards = temp.querySelectorAll('.player-card');
         playerGrid.innerHTML = '';
         if (!cards.length) return;
+
         cards.forEach(card => {
             const lines = card.innerHTML.split('<hr>')[0];
             const tempEl = document.createElement('div');
             tempEl.innerHTML = lines;
             const texts = tempEl.querySelectorAll('strong');
+
             if (texts.length >= 5) {
                 const newCard = document.createElement('div');
                 newCard.className = 'player-card';
                 newCard.innerHTML = `
                     <div class="p-name">${texts[0]?.nextSibling?.textContent?.trim() || ''}</div>
-                    <div class="p-team">${texts[1]?.nextSibling?.textContent?.trim() || ''}</div>
+                    <div class="p-team">${texts[1]?.textContent?.trim() || ''}</div>
                     <div class="p-detail">
-                        <strong>位置</strong>：${texts[2]?.nextSibling?.textContent?.trim() || ''}<br>
+                        <strong>位置</strong>：${texts[2]?.textContent?.trim() || ''}<br>
                         <strong>身高</strong>：${texts[3]?.nextSibling?.textContent?.trim() || ''} cm<br>
                         <strong>體重</strong>：${texts[4]?.nextSibling?.textContent?.trim() || ''} kg<br>
                         <strong>年齡</strong>：${texts[5]?.nextSibling?.textContent?.trim() || ''}
